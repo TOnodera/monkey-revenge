@@ -15,7 +15,7 @@
 			"editor.defaultFormatter": "golang.go"
 		}
 	},
-	"extensions": ["golang.go"]
+	"extensions": ["golang.go","mhutchie.git-graph"]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
