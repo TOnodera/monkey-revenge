@@ -12,7 +12,7 @@
 		"[go]": {
 			"editor.insertSpaces": true,
 			"editor.formatOnSave": true,
-			"editor.defaultFormatter": "golang.go",
+			"editor.defaultFormatter": "golang.go"
 		}
 	},
 	"extensions": ["golang.go","mhutchie.git-graph"]
