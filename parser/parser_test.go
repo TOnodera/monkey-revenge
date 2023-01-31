@@ -12,6 +12,7 @@ func TestLetStatement(t *testing.T) {
 let x = 5;
 let y = 10;
 let foobar = 838383;
+
 `
 	l := lexer.New(input)
 	p := New(l)
@@ -80,4 +81,31 @@ func checkParseErrors(t *testing.T, p *Parser) {
 		t.Errorf("parser error: %q", msg)
 	}
 	t.FailNow()
+}
+
+func TestReturnStatements(t *testing.T) {
+	input := `
+return 5;
+return 10;
+return 993322;
+`
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParseErrors(t, p)
+
+	if len(program.Statemens) != 3 {
+		t.Fatalf("program.Statementsの個数が期待値3と一致しません。期待値:3 実際の値: %d", len(program.Statemens))
+	}
+
+	for _, stmt := range program.Statemens {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmtがast.ReturnStatement1と一致しません。実際の値: %T", stmt)
+		}
+		if returnStmt.TokenLiteral() != "return" {
+			t.Errorf("returnStmt.TokenLiteralがreturnになっていません。期待値: return 実際の値: %q", returnStmt.TokenLiteral())
+		}
+	}
 }
