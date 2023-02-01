@@ -109,3 +109,30 @@ return 993322;
 		}
 	}
 }
+
+func TestIdentifirerExpression(t *testing.T) {
+	input := "foobar;"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParseErrors(t, p)
+
+	if len(program.Statemens) != 1 {
+		t.Fatalf("入力されたプログラムのStatementsの個数が期待値と一致しません。期待値:1 実際の値:%d", len(program.Statemens))
+	}
+
+	stmt, ok := program.Statemens[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0]はast.ExpressionStatementと一致しません。")
+	}
+
+	ident, ok := stmt.Expression.(*ast.Identifier)
+	if !ok {
+		t.Fatalf("ident.Valueは%sではなく%sでした。", "foobar", ident.Value)
+	}
+
+	if ident.TokenLiteral() != "foobar" {
+		t.Errorf("ident.TokenLIteralは%sではなく%sでした。", "foobar", ident.TokenLiteral())
+	}
+
+}
