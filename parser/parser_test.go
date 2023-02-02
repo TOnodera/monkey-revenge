@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"main/ast"
 	"main/lexer"
 	"testing"
@@ -134,7 +135,6 @@ func TestIdentifirerExpression(t *testing.T) {
 	if ident.TokenLiteral() != "foobar" {
 		t.Errorf("ident.TokenLIteralは%sではなく%sでした。", "foobar", ident.TokenLiteral())
 	}
-
 }
 
 func TestItengerLiteralExpression(t *testing.T) {
@@ -165,4 +165,64 @@ func TestItengerLiteralExpression(t *testing.T) {
 	if literal.TokenLiteral() != "5" {
 		t.Errorf("literal.TokenLIteralが%sと一致しません。実際の値: %s", "5", literal.TokenLiteral())
 	}
+}
+
+func TestParsingPrefixExpressions(t *testing.T) {
+	prefixTests := []struct {
+		input        string
+		operator     string
+		integerValue int64
+	}{
+		{"!5;", "!", 5},
+		{"-15;", "-", 15},
+	}
+
+	for _, tt := range prefixTests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParseErrors(t, p)
+
+		if len(program.Statemens) != 1 {
+			t.Fatalf("program.Statementsの数が期待値と一致しません。期待値:1, 実際の値: %d",
+				len(program.Statemens))
+		}
+
+		stmt, ok := program.Statemens[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0]は型ast.ExpressionStatemtと一致しません。実際の値: %T",
+				program.Statemens[0])
+		}
+
+		exp, ok := stmt.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Fatalf("stmtはast.PrefixExpressionではありません。実際の値: %T",
+				stmt.Expression)
+		}
+
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operatorは%sではありません。実際の値: %s", tt.operator, exp.Operator)
+		}
+
+		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+			return
+		}
+	}
+}
+
+func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
+	integ, ok := il.(*ast.IntegerLiteral)
+	if !ok {
+		t.Errorf("ilはast.IntegerLiteral型ではありません。実際の値: %T", il)
+	}
+
+	if integ.Value != value {
+		t.Errorf("integ.Valueは%dではありません。実際の値: %d", value, integ.Value)
+	}
+
+	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
+		t.Errorf("integ.TokenLiteralは%dではありません。実際の値: %s", value, integ.TokenLiteral())
+	}
+
+	return true
 }
