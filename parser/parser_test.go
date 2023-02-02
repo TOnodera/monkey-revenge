@@ -153,7 +153,7 @@ func TestItengerLiteralExpression(t *testing.T) {
 		t.Fatalf("program.Statements[0]が型ast.ExpressionStatementと一致しません。実際の値: %T", program.Statemens[0])
 	}
 
-	literal, ok = stmt.Expression.(*ast.IntegerLiteral)
+	literal, ok := stmt.Expression.(*ast.IntegerLiteral)
 	if !ok {
 		t.Fatalf("式がast.IntgerLiteralと一致しません。実際の値: %T", stmt.Expression)
 	}
@@ -163,6 +163,6 @@ func TestItengerLiteralExpression(t *testing.T) {
 	}
 
 	if literal.TokenLiteral() != "5" {
-		t.Errorf("literal.TokenLIteralが%sと一致しません。", "5", literal.TokenLIteral())
+		t.Errorf("literal.TokenLIteralが%sと一致しません。実際の値: %s", "5", literal.TokenLiteral())
 	}
 }
