@@ -136,3 +136,33 @@ func TestIdentifirerExpression(t *testing.T) {
 	}
 
 }
+
+func TestItengerLiteralExpression(t *testing.T) {
+	input := "5"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParseErrors(t, p)
+
+	if len(program.Statemens) != 1 {
+		t.Fatalf("program.Statementsの数が期待値と一致しません。期待値:1 , 実際の値: %d", len(program.Statemens))
+	}
+
+	stmt, ok := program.Statemens[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0]が型ast.ExpressionStatementと一致しません。実際の値: %T", program.Statemens[0])
+	}
+
+	literal, ok = stmt.Expression.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("式がast.IntgerLiteralと一致しません。実際の値: %T", stmt.Expression)
+	}
+
+	if literal.Value != 5 {
+		t.Errorf("literal.Valueが期待値と一致しません。期待値: 5,実際の値: %d", literal.Value)
+	}
+
+	if literal.TokenLiteral() != "5" {
+		t.Errorf("literal.TokenLIteralが%sと一致しません。", "5", literal.TokenLIteral())
+	}
+}
