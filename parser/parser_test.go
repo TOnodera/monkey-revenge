@@ -269,7 +269,7 @@ func TestParseingInfixExpressions(t *testing.T) {
 		}
 
 		if exp.Operator != tt.operator {
-			t.Fatalf("exp.Operatorは%sではありません。期待値: %s, 実際の値: %s", tt.operator, exp.Operator)
+			t.Fatalf("exp.Operatorが期待値と一致しません。期待値: %s, 実際の値: %s", tt.operator, exp.Operator)
 		}
 
 		if !testIntegerLiteral(t, exp.Right, tt.rightValue) {
