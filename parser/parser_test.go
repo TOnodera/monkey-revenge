@@ -226,3 +226,54 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 
 	return true
 }
+
+func TestParseingInfixExpressions(t *testing.T) {
+	infixTests := []struct {
+		input      string
+		leftValue  int64
+		operator   string
+		rightValue int64
+	}{
+		{"5+5;", 5, "+", 5},
+		{"5-5;", 5, "-", 5},
+		{"5*5;", 5, "*", 5},
+		{"5/5;", 5, "/", 5},
+		{"5>5;", 5, ">", 5},
+		{"5<5;", 5, "<", 5},
+		{"5==5;", 5, "==", 5},
+		{"5!=5;", 5, "!=", 5},
+	}
+
+	for _, tt := range infixTests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParseErrors(t, p)
+
+		if len(program.Statemens) != 1 {
+			t.Fatalf("program.Statementsの数が期待値と一致しません。期待値: 1, 実際の値: %d", len(program.Statemens))
+		}
+
+		stmt, ok := program.Statemens[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0]はast.ExpressionStatement型ではありません。実際の型: %T", program.Statemens[0])
+		}
+
+		exp, ok := stmt.Expression.(*ast.InfixExpression)
+		if !ok {
+			t.Fatalf("expはInfixExpression型ではありません。実際の型: %T", stmt.Expression)
+		}
+
+		if !testIntegerLiteral(t, exp.Left, tt.leftValue) {
+			return
+		}
+
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operatorは%sではありません。期待値: %s, 実際の値: %s", tt.operator, exp.Operator)
+		}
+
+		if !testIntegerLiteral(t, exp.Right, tt.rightValue) {
+			return
+		}
+	}
+}
