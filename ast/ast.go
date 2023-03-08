@@ -21,6 +21,19 @@ type PrefixExpression struct {
 	Right    Expression
 }
 
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) expressionNode() {}
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+
 func (pe *PrefixExpression) expressionNode() {}
 func (pe *PrefixExpression) TokenLiteral() string {
 	return pe.Token.Literal
@@ -41,12 +54,12 @@ type Expression interface {
 }
 
 type Program struct {
-	Statemens []Statement
+	Statements []Statement
 }
 
 func (p *Program) TokenLiteral() string {
-	if len(p.Statemens) > 0 {
-		return p.Statemens[0].TokenLiteral()
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
 	} else {
 		return ""
 	}
@@ -55,7 +68,7 @@ func (p *Program) TokenLiteral() string {
 func (p *Program) String() string {
 	var out bytes.Buffer
 
-	for _, s := range p.Statemens {
+	for _, s := range p.Statements {
 		out.WriteString(s.String())
 	}
 

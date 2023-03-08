@@ -7,7 +7,7 @@ import (
 
 func TestString(t *testing.T) {
 	program := &Program{
-		Statemens: []Statement{
+		Statements: []Statement{
 			&LetStatement{
 				Token: token.Token{Type: token.LET, Literal: "let"},
 				Name: &Identifier{

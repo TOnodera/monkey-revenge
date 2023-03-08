@@ -52,6 +52,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -85,11 +87,11 @@ func (p *Parser) nextToken() {
 
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
-	program.Statemens = []ast.Statement{}
+	program.Statements = []ast.Statement{}
 	for p.curToken.Type != token.EOF {
 		stmt := p.parseStatment()
 		if stmt != nil {
-			program.Statemens = append(program.Statemens, stmt)
+			program.Statements = append(program.Statements, stmt)
 		}
 		p.nextToken()
 	}
@@ -270,6 +272,10 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 
 	return expression
+}
+
+func (p *Parser) parseBoolean() ast.Expression {
+	return &ast.Boolean{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
 }
 
 var traceLevel int = 0
